@@ -679,3 +679,360 @@
   color: var(--text-muted);
   max-width: 400px;
 }
+
+/* ==========================================================================
+   SENA DatePicker Component (Custom Glassmorphism Date Picker)
+   ========================================================================== */
+
+.sena-datepicker-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+}
+
+.sena-datepicker-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font-main);
+  transition: all var(--transition-fast);
+}
+
+.sena-datepicker-trigger:hover {
+  border-color: var(--sena-primary);
+  background: var(--bg-card-hover);
+  box-shadow: 0 0 12px var(--sena-primary-light);
+}
+
+.sena-datepicker-trigger.active {
+  border-color: var(--sena-primary);
+  box-shadow: 0 0 0 2px var(--sena-primary-light);
+}
+
+.sena-datepicker-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Sizes */
+.sena-datepicker-sm {
+  padding: 0.22rem 0.5rem;
+  font-size: 0.74rem;
+}
+
+.sena-datepicker-md {
+  padding: 0.32rem 0.68rem;
+  font-size: 0.82rem;
+}
+
+.sena-datepicker-lg {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.sena-datepicker-icon-wrap {
+  display: flex;
+  align-items: center;
+  color: var(--sena-primary);
+}
+
+.sena-datepicker-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.sena-datepicker-val {
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.sena-datepicker-chevron {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  margin-left: 0.15rem;
+}
+
+.sena-datepicker-chevron.rotated {
+  transform: rotate(180deg);
+  color: var(--sena-primary);
+}
+
+/* Dropdown Calendar Popup */
+.sena-datepicker-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  width: 300px;
+  background: var(--bg-surface-elevated);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  z-index: 1050;
+}
+
+.sena-datepicker-dropdown.align-left {
+  left: 0;
+}
+
+.sena-datepicker-dropdown.align-right {
+  right: 0;
+}
+
+/* Popover Animation */
+@keyframes popoverIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-popover {
+  animation: popoverIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top;
+}
+
+/* Dropdown Header */
+.sena-datepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sena-datepicker-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sena-datepicker-month-btn,
+.sena-datepicker-year-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sena-datepicker-month-btn:hover,
+.sena-datepicker-year-btn:hover,
+.sena-datepicker-month-btn.active,
+.sena-datepicker-year-btn.active {
+  background: var(--sena-primary-light);
+  color: var(--sena-primary);
+  border-color: rgba(57, 169, 0, 0.3);
+}
+
+.sena-datepicker-nav-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.sena-datepicker-nav-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sena-datepicker-nav-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+  border-color: var(--border-strong);
+}
+
+/* Weekdays Row */
+.sena-datepicker-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 0.35rem;
+}
+
+.sena-datepicker-weekday-cell {
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding: 0.2rem 0;
+}
+
+/* Days Grid */
+.sena-datepicker-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.sena-datepicker-day-cell {
+  aspect-ratio: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.sena-datepicker-day-cell:hover:not(:disabled):not(.selected) {
+  background: var(--sena-primary-light);
+  color: var(--sena-primary);
+  border-color: rgba(57, 169, 0, 0.3);
+  transform: scale(1.05);
+}
+
+.sena-datepicker-day-cell.outside-month {
+  color: var(--text-dim);
+  opacity: 0.35;
+}
+
+.sena-datepicker-day-cell.outside-month:hover {
+  opacity: 0.8;
+}
+
+.sena-datepicker-day-cell.today {
+  font-weight: 800;
+  color: var(--sena-primary);
+  border-color: rgba(57, 169, 0, 0.4);
+}
+
+.sena-datepicker-today-dot {
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--sena-primary);
+}
+
+.sena-datepicker-day-cell.selected {
+  background: var(--sena-primary);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 3px 10px var(--sena-primary-glow);
+  border-color: #39A900;
+}
+
+.sena-datepicker-day-cell:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Fast Month Selector Grid */
+.sena-datepicker-months-grid,
+.sena-datepicker-years-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+}
+
+.sena-datepicker-month-cell,
+.sena-datepicker-year-cell {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.55rem 0.2rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.sena-datepicker-month-cell:hover,
+.sena-datepicker-year-cell:hover {
+  background: var(--sena-primary-light);
+  color: var(--sena-primary);
+  border-color: rgba(57, 169, 0, 0.3);
+}
+
+.sena-datepicker-month-cell.selected,
+.sena-datepicker-year-cell.selected {
+  background: var(--sena-primary);
+  color: #ffffff;
+  font-weight: 800;
+  border-color: #39A900;
+  box-shadow: 0 2px 8px var(--sena-primary-glow);
+}
+
+/* Footer */
+.sena-datepicker-footer {
+  margin-top: 0.65rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sena-datepicker-footer-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sena-datepicker-human-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.sena-datepicker-quick-btn {
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius-sm);
+}
+

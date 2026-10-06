@@ -31,14 +31,41 @@ export interface Instructor {
   jornadasDisponibles?: JornadaType[];
 }
 
+export interface CompetenciaPlantilla {
+  id: string;
+  codigo: string; // e.g. "220501096"
+  nombre: string;
+  resultadoAprendizaje?: string;
+  horasSemanales: number; // e.g. 8 horas por semana
+  horasTotales: number; // e.g. 96 horas en el trimestre
+  bloqueMinimoHoras?: number; // e.g. 2, 3 o 4 horas seguidas
+  fechaInicio?: string; // Formato YYYY-MM-DD
+  fechaFin?: string;    // Formato YYYY-MM-DD
+  instructorIdSugerido?: string;
+  ambienteIdSugerido?: string;
+}
+
+export interface Programa {
+  id: string;
+  codigo: string; // e.g. "228106"
+  nombre: string; // e.g. "Análisis y Desarrollo de Software (ADSO)"
+  nivelFormacion: 'Técnico' | 'Tecnólogo' | 'Especialización Tecnológica' | 'Operario' | 'Auxiliar' | 'Curso Corto';
+  duracionMeses?: number; // e.g. 24 meses
+  descripcion?: string;
+  competencias: CompetenciaPlantilla[];
+}
+
 export interface Ficha {
   id: string;
   codigo: string; // e.g. "2670123"
+  programaId?: string; // ID del Programa de Formación asociado
   nombrePrograma: string; // e.g. "Análisis y Desarrollo de Software (ADSO)"
   nivelFormacion: 'Técnico' | 'Tecnólogo' | 'Especialización Tecnológica' | 'Operario' | 'Auxiliar' | 'Curso Corto';
   jornada: JornadaType;
   trimestre: number;
   totalAprendices: number;
+  fechaIngreso?: string; // Formato YYYY-MM-DD
+  fechaSalida?: string;  // Formato YYYY-MM-DD
   sede?: string;
   diasFormacion?: DayOfWeek[];
 }
@@ -64,6 +91,8 @@ export interface Competencia {
   horasSemanales: number; // e.g. 8 horas por semana
   horasTotales: number; // e.g. 96 horas en el trimestre
   bloqueMinimoHoras?: number; // e.g. 2 o 3 horas seguidas
+  fechaInicio?: string; // Formato YYYY-MM-DD
+  fechaFin?: string;    // Formato YYYY-MM-DD
 }
 
 export interface HorarioEntry {

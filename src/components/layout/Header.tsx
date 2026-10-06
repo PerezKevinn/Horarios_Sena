@@ -20,6 +20,7 @@ export const Header: React.FC = () => {
   const {
     theme,
     setTheme,
+    programas,
     instructores,
     fichas,
     ambientes,
@@ -52,6 +53,7 @@ export const Header: React.FC = () => {
 
   const handleExportJSON = () => {
     exportStateAsJSON({
+      programas,
       instructores,
       fichas,
       ambientes,

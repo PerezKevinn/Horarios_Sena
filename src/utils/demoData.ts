@@ -1,4 +1,262 @@
-import type { Instructor, Ficha, Ambiente, Competencia, HorarioEntry } from '../types';
+import type { Instructor, Ficha, Ambiente, Competencia, HorarioEntry, Programa } from '../types';
+
+export const INITIAL_PROGRAMAS: Programa[] = [
+  {
+    id: 'prog-1',
+    codigo: '228106',
+    nombre: 'Tecnólogo en Análisis y Desarrollo de Software (ADSO)',
+    nivelFormacion: 'Tecnólogo',
+    duracionMeses: 24,
+    descripcion: 'Formación profesional orientada a la ingeniería de software, arquitectura de sistemas, diseño de bases de datos y desarrollo FullStack web y móvil.',
+    competencias: [
+      {
+        id: 'comp-plantilla-101',
+        codigo: '220501096',
+        nombre: 'Desarrollar la solución de software de acuerdo con el diseño y metodologías de desarrollo',
+        resultadoAprendizaje: 'Construir el backend y servicios REST aplicando patrones arquitectónicos',
+        horasSemanales: 8,
+        horasTotales: 96,
+        bloqueMinimoHoras: 4,
+        fechaInicio: '2026-01-20',
+        fechaFin: '2026-06-30',
+        instructorIdSugerido: 'inst-1',
+        ambienteIdSugerido: 'amb-1',
+      },
+      {
+        id: 'comp-plantilla-102',
+        codigo: '220501095',
+        nombre: 'Diseñar la estructura de la base de datos según requerimientos del cliente',
+        resultadoAprendizaje: 'Crear el modelo relacional y scripts DDL/DML en motor PostgreSQL',
+        horasSemanales: 8,
+        horasTotales: 96,
+        bloqueMinimoHoras: 4,
+        fechaInicio: '2026-01-20',
+        fechaFin: '2026-06-30',
+        instructorIdSugerido: 'inst-2',
+        ambienteIdSugerido: 'amb-2',
+      },
+      {
+        id: 'comp-plantilla-103',
+        codigo: '240202501',
+        nombre: 'Interactuar en lengua inglesa de forma oral y escrita en contextos laborales y académicos',
+        resultadoAprendizaje: 'Comprender vocabulario técnico de software y documentación en inglés',
+        horasSemanales: 6,
+        horasTotales: 72,
+        bloqueMinimoHoras: 3,
+        fechaInicio: '2026-01-20',
+        fechaFin: '2026-06-30',
+        instructorIdSugerido: 'inst-4',
+        ambienteIdSugerido: 'amb-4',
+      },
+      {
+        id: 'comp-plantilla-104',
+        codigo: '240201526',
+        nombre: 'Enriquecer el proyecto de vida con base en principios y valores éticos',
+        resultadoAprendizaje: 'Promover la convivencia y el trabajo colaborativo en el entorno productivo',
+        horasSemanales: 4,
+        horasTotales: 48,
+        bloqueMinimoHoras: 2,
+        fechaInicio: '2026-01-20',
+        fechaFin: '2026-06-30',
+        instructorIdSugerido: 'inst-6',
+        ambienteIdSugerido: 'amb-6',
+      }
+    ]
+  },
+  {
+    id: 'prog-2',
+    codigo: '228118',
+    nombre: 'Tecnólogo en Gestión de Redes de Datos',
+    nivelFormacion: 'Tecnólogo',
+    duracionMeses: 24,
+    descripcion: 'Diseño, configuración, administración y aseguramiento de infraestructuras de telecomunicaciones, servidores y redes empresariales cableadas e inalámbricas.',
+    competencias: [
+      {
+        id: 'comp-plantilla-201',
+        codigo: '220501012',
+        nombre: 'Implementar la estructura de la red cableada e inalámbrica según normas técnicas internacionales',
+        resultadoAprendizaje: 'Configurar switches, routers y VLANs para la topología empresarial',
+        horasSemanales: 10,
+        horasTotales: 120,
+        bloqueMinimoHoras: 3,
+        fechaInicio: '2026-04-14',
+        fechaFin: '2026-09-30',
+        instructorIdSugerido: 'inst-3',
+        ambienteIdSugerido: 'amb-3',
+      },
+      {
+        id: 'comp-plantilla-202',
+        codigo: '240202501',
+        nombre: 'Interactuar en lengua inglesa de forma oral y escrita en contextos laborales y académicos',
+        resultadoAprendizaje: 'Interpretar manuales de networking y configuraciones en inglés',
+        horasSemanales: 6,
+        horasTotales: 72,
+        bloqueMinimoHoras: 3,
+        fechaInicio: '2026-04-14',
+        fechaFin: '2026-09-30',
+        instructorIdSugerido: 'inst-4',
+        ambienteIdSugerido: 'amb-4',
+      },
+      {
+        id: 'comp-plantilla-203',
+        codigo: '240201526',
+        nombre: 'Enriquecer el proyecto de vida con base en principios y valores éticos',
+        resultadoAprendizaje: 'Liderar equipos de soporte y mantenimiento con ética profesional',
+        horasSemanales: 4,
+        horasTotales: 48,
+        bloqueMinimoHoras: 2,
+        fechaInicio: '2026-04-14',
+        fechaFin: '2026-09-30',
+        instructorIdSugerido: 'inst-6',
+        ambienteIdSugerido: 'amb-6',
+      }
+    ]
+  },
+  {
+    id: 'prog-3',
+    codigo: '217311',
+    nombre: 'Técnico en Programación de Aplicaciones para Dispositivos Móviles',
+    nivelFormacion: 'Técnico',
+    duracionMeses: 12,
+    descripcion: 'Desarrollo de software frontend y backend para dispositivos móviles inteligentes, integración con servicios cloud y publicación en tiendas de aplicaciones.',
+    competencias: [
+      {
+        id: 'comp-plantilla-301',
+        codigo: '220501097',
+        nombre: 'Construir aplicaciones móviles nativas e híbridas según diseño y plataformas objetivo',
+        resultadoAprendizaje: 'Desarrollar aplicaciones Android y Flutter integradas con APIs en la nube',
+        horasSemanales: 10,
+        horasTotales: 120,
+        bloqueMinimoHoras: 3,
+        fechaInicio: '2026-04-14',
+        fechaFin: '2026-10-30',
+        instructorIdSugerido: 'inst-5',
+        ambienteIdSugerido: 'amb-5',
+      },
+      {
+        id: 'comp-plantilla-302',
+        codigo: '220501095',
+        nombre: 'Diseñar la estructura de la base de datos según requerimientos del cliente',
+        resultadoAprendizaje: 'Implementar bases de datos SQLite y Firestore para apps móviles',
+        horasSemanales: 8,
+        horasTotales: 96,
+        bloqueMinimoHoras: 2,
+        fechaInicio: '2026-04-14',
+        fechaFin: '2026-10-30',
+        instructorIdSugerido: 'inst-2',
+        ambienteIdSugerido: 'amb-2',
+      },
+      {
+        id: 'comp-plantilla-303',
+        codigo: '240202501',
+        nombre: 'Interactuar en lengua inglesa de forma oral y escrita en contextos laborales y académicos',
+        resultadoAprendizaje: 'Documentación de librerías y APIs en inglés',
+        horasSemanales: 6,
+        horasTotales: 72,
+        bloqueMinimoHoras: 3,
+        fechaInicio: '2026-04-14',
+        fechaFin: '2026-10-30',
+        instructorIdSugerido: 'inst-4',
+        ambienteIdSugerido: 'amb-4',
+      }
+    ]
+  },
+  {
+    id: 'prog-4',
+    codigo: '228125',
+    nombre: 'Tecnólogo en Ciberseguridad y Gestión de Incidentes',
+    nivelFormacion: 'Tecnólogo',
+    duracionMeses: 24,
+    descripcion: 'Protección de activos de información, detección y mitigación de intrusiones, auditoría de seguridad y análisis forense digital.',
+    competencias: [
+      {
+        id: 'comp-plantilla-401',
+        codigo: '220501102',
+        nombre: 'Implementar sistemas de detección y respuesta ante incidentes de ciberseguridad',
+        resultadoAprendizaje: 'Configurar sistemas SIEM, IDS/IPS y políticas de contingencia',
+        horasSemanales: 8,
+        horasTotales: 96,
+        bloqueMinimoHoras: 4,
+        fechaInicio: '2026-07-07',
+        fechaFin: '2026-12-18',
+        instructorIdSugerido: 'inst-3',
+        ambienteIdSugerido: 'amb-3',
+      },
+      {
+        id: 'comp-plantilla-402',
+        codigo: '240202501',
+        nombre: 'Interactuar en lengua inglesa en contextos de ciberseguridad',
+        resultadoAprendizaje: 'Comunicación técnica y reportes de vulnerabilidad en inglés',
+        horasSemanales: 6,
+        horasTotales: 72,
+        bloqueMinimoHoras: 3,
+        fechaInicio: '2026-07-07',
+        fechaFin: '2026-12-18',
+        instructorIdSugerido: 'inst-4',
+        ambienteIdSugerido: 'amb-4',
+      }
+    ]
+  }
+];
+
+export const INITIAL_FICHAS: Ficha[] = [
+  {
+    id: 'ficha-1',
+    codigo: '2670123',
+    programaId: 'prog-1',
+    nombrePrograma: 'Tecnólogo en Análisis y Desarrollo de Software (ADSO)',
+    nivelFormacion: 'Tecnólogo',
+    jornada: 'Mañana',
+    trimestre: 3,
+    totalAprendices: 28,
+    fechaIngreso: '2026-01-20',
+    fechaSalida: '2027-10-15',
+    sede: 'Centro de Teleinformática y Producción',
+    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+  },
+  {
+    id: 'ficha-2',
+    codigo: '2670456',
+    programaId: 'prog-2',
+    nombrePrograma: 'Tecnólogo en Gestión de Redes de Datos',
+    nivelFormacion: 'Tecnólogo',
+    jornada: 'Mañana',
+    trimestre: 2,
+    totalAprendices: 24,
+    fechaIngreso: '2026-04-14',
+    fechaSalida: '2027-12-20',
+    sede: 'Centro de Teleinformática y Producción',
+    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+  },
+  {
+    id: 'ficha-3',
+    codigo: '2710890',
+    programaId: 'prog-1',
+    nombrePrograma: 'Tecnólogo en Análisis y Desarrollo de Software (ADSO) - Tarde',
+    nivelFormacion: 'Tecnólogo',
+    jornada: 'Tarde',
+    trimestre: 1,
+    totalAprendices: 30,
+    fechaIngreso: '2026-07-07',
+    fechaSalida: '2028-04-10',
+    sede: 'Centro de Teleinformática y Producción',
+    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+  },
+  {
+    id: 'ficha-4',
+    codigo: '2820555',
+    programaId: 'prog-3',
+    nombrePrograma: 'Técnico en Programación de Aplicaciones para Dispositivos Móviles',
+    nivelFormacion: 'Técnico',
+    jornada: 'Noche',
+    trimestre: 2,
+    totalAprendices: 22,
+    fechaIngreso: '2026-04-14',
+    fechaSalida: '2027-04-15',
+    sede: 'Centro de Teleinformática y Producción',
+    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+  }
+];
 
 export const INITIAL_INSTRUCTORES: Instructor[] = [
   {
@@ -81,53 +339,6 @@ export const INITIAL_INSTRUCTORES: Instructor[] = [
   }
 ];
 
-export const INITIAL_FICHAS: Ficha[] = [
-  {
-    id: 'ficha-1',
-    codigo: '2670123',
-    nombrePrograma: 'Tecnólogo en Análisis y Desarrollo de Software (ADSO)',
-    nivelFormacion: 'Tecnólogo',
-    jornada: 'Mañana',
-    trimestre: 3,
-    totalAprendices: 28,
-    sede: 'Centro de Teleinformática y Producción',
-    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-  },
-  {
-    id: 'ficha-2',
-    codigo: '2670456',
-    nombrePrograma: 'Tecnólogo en Gestión de Redes de Datos',
-    nivelFormacion: 'Tecnólogo',
-    jornada: 'Mañana',
-    trimestre: 2,
-    totalAprendices: 24,
-    sede: 'Centro de Teleinformática y Producción',
-    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-  },
-  {
-    id: 'ficha-3',
-    codigo: '2710890',
-    nombrePrograma: 'Tecnólogo en Análisis y Desarrollo de Software (ADSO) - Tarde',
-    nivelFormacion: 'Tecnólogo',
-    jornada: 'Tarde',
-    trimestre: 1,
-    totalAprendices: 30,
-    sede: 'Centro de Teleinformática y Producción',
-    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-  },
-  {
-    id: 'ficha-4',
-    codigo: '2820555',
-    nombrePrograma: 'Técnico en Programación de Aplicaciones para Dispositivos Móviles',
-    nivelFormacion: 'Técnico',
-    jornada: 'Noche',
-    trimestre: 2,
-    totalAprendices: 22,
-    sede: 'Centro de Teleinformática y Producción',
-    diasFormacion: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
-  }
-];
-
 export const INITIAL_AMBIENTES: Ambiente[] = [
   {
     id: 'amb-1',
@@ -185,7 +396,7 @@ export const INITIAL_AMBIENTES: Ambiente[] = [
 ];
 
 export const INITIAL_COMPETENCIAS: Competencia[] = [
-  // Ficha 1 - ADSO Mañana
+  // Ficha 1 - ADSO Mañana (2026-01-20 al 2027-10-15)
   {
     id: 'comp-101',
     codigo: '220501096',
@@ -197,6 +408,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 8,
     horasTotales: 96,
     bloqueMinimoHoras: 4,
+    fechaInicio: '2026-01-20',
+    fechaFin: '2026-06-30',
   },
   {
     id: 'comp-102',
@@ -209,6 +422,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 8,
     horasTotales: 96,
     bloqueMinimoHoras: 4,
+    fechaInicio: '2026-01-20',
+    fechaFin: '2026-06-30',
   },
   {
     id: 'comp-103',
@@ -221,6 +436,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 6,
     horasTotales: 72,
     bloqueMinimoHoras: 3,
+    fechaInicio: '2026-01-20',
+    fechaFin: '2026-06-30',
   },
   {
     id: 'comp-104',
@@ -233,9 +450,11 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 4,
     horasTotales: 48,
     bloqueMinimoHoras: 2,
+    fechaInicio: '2026-01-20',
+    fechaFin: '2026-06-30',
   },
 
-  // Ficha 2 - Redes Mañana
+  // Ficha 2 - Redes Mañana (2026-04-14 al 2027-12-20)
   {
     id: 'comp-201',
     codigo: '220501012',
@@ -247,6 +466,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 10,
     horasTotales: 120,
     bloqueMinimoHoras: 3,
+    fechaInicio: '2026-04-14',
+    fechaFin: '2026-09-30',
   },
   {
     id: 'comp-202',
@@ -259,6 +480,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 6,
     horasTotales: 72,
     bloqueMinimoHoras: 3,
+    fechaInicio: '2026-04-14',
+    fechaFin: '2026-09-30',
   },
   {
     id: 'comp-203',
@@ -271,9 +494,11 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 4,
     horasTotales: 48,
     bloqueMinimoHoras: 2,
+    fechaInicio: '2026-04-14',
+    fechaFin: '2026-09-30',
   },
 
-  // Ficha 3 - ADSO Tarde
+  // Ficha 3 - ADSO Tarde (2026-07-07 al 2028-04-10)
   {
     id: 'comp-301',
     codigo: '220501093',
@@ -285,6 +510,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 8,
     horasTotales: 96,
     bloqueMinimoHoras: 4,
+    fechaInicio: '2026-07-07',
+    fechaFin: '2026-12-18',
   },
   {
     id: 'comp-302',
@@ -297,6 +524,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 10,
     horasTotales: 120,
     bloqueMinimoHoras: 3,
+    fechaInicio: '2026-07-07',
+    fechaFin: '2026-12-18',
   },
   {
     id: 'comp-303',
@@ -309,9 +538,11 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 6,
     horasTotales: 72,
     bloqueMinimoHoras: 3,
+    fechaInicio: '2026-07-07',
+    fechaFin: '2026-12-18',
   },
 
-  // Ficha 4 - Apps Móviles Noche
+  // Ficha 4 - Apps Móviles Noche (2026-04-14 al 2027-04-15)
   {
     id: 'comp-401',
     codigo: '220501097',
@@ -323,6 +554,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 10,
     horasTotales: 120,
     bloqueMinimoHoras: 2,
+    fechaInicio: '2026-04-14',
+    fechaFin: '2026-10-30',
   },
   {
     id: 'comp-402',
@@ -335,6 +568,8 @@ export const INITIAL_COMPETENCIAS: Competencia[] = [
     horasSemanales: 8,
     horasTotales: 96,
     bloqueMinimoHoras: 2,
+    fechaInicio: '2026-04-14',
+    fechaFin: '2026-10-30',
   }
 ];
 

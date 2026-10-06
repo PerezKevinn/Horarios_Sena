@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
 import type {
   HorarioEntry,
   DayOfWeek,
@@ -12,6 +11,14 @@ import type {
 import { DAYS_OF_WEEK } from '../../types';
 import { ScheduleCard } from './ScheduleCard';
 
+export interface DayDateInfo {
+  dia: DayOfWeek;
+  dateStr: string;
+  dayNumber: number;
+  monthShort: string;
+  isToday: boolean;
+}
+
 interface ScheduleGridProps {
   horarios: HorarioEntry[];
   instructores: Instructor[];
@@ -19,6 +26,7 @@ interface ScheduleGridProps {
   ambientes: Ambiente[];
   competencias: Competencia[];
   conflicts: ConflictDetail[];
+  weekDates?: DayDateInfo[];
   onEditSlot: (slot: HorarioEntry) => void;
   onDeleteSlot: (slotId: string) => void;
   onAddSlotAtCell: (dia: DayOfWeek, hora: number) => void;
@@ -34,6 +42,7 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
   ambientes,
   competencias,
   conflicts,
+  weekDates,
   onEditSlot,
   onDeleteSlot,
   onAddSlotAtCell,
@@ -45,6 +54,8 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
   const fichaMap = new Map(fichas.map(f => [f.id, f]));
   const ambienteMap = new Map(ambientes.map(a => [a.id, a]));
   const competenciaMap = new Map(competencias.map(c => [c.id, c]));
+
+  const dateMap = new Map(weekDates?.map(d => [d.dia, d]));
 
   const handleDragOver = (e: React.DragEvent, dia: DayOfWeek, hora: number) => {
     e.preventDefault();
@@ -81,11 +92,39 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
         <div className="schedule-header-cell">
           <span>Hora</span>
         </div>
-        {DAYS_OF_WEEK.map((dia) => (
-          <div key={dia} className="schedule-header-cell">
-            <span>{dia}</span>
-          </div>
-        ))}
+        {DAYS_OF_WEEK.map((dia) => {
+          const dateInfo = dateMap.get(dia);
+          return (
+            <div
+              key={dia}
+              className="schedule-header-cell"
+              style={{
+                background: dateInfo?.isToday ? 'rgba(57, 169, 0, 0.1)' : undefined,
+                borderBottom: dateInfo?.isToday ? '2px solid var(--sena-primary)' : undefined,
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                <span style={{ color: dateInfo?.isToday ? 'var(--sena-primary)' : 'inherit', fontWeight: 800 }}>
+                  {dia}
+                </span>
+                {dateInfo && (
+                  <span
+                    style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: dateInfo.isToday ? 'white' : 'var(--text-muted)',
+                      background: dateInfo.isToday ? 'var(--sena-primary)' : 'transparent',
+                      padding: dateInfo.isToday ? '0.1rem 0.45rem' : '0',
+                      borderRadius: '999px'
+                    }}
+                  >
+                    {dateInfo.dayNumber} {dateInfo.monthShort}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
 
         {/* Time Grid Rows */}
         {HOURS.map((hora) => (
@@ -102,6 +141,7 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
 
             {/* Day Slots */}
             {DAYS_OF_WEEK.map((dia) => {
+              const dateInfo = dateMap.get(dia);
               const startingEntries = horarios.filter(
                 (h) => h.dia === dia && h.horaInicio === hora
               );
@@ -120,6 +160,9 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
                 <div
                   key={`${dia}-${hora}`}
                   className={`schedule-slot-cell ${isDragOver ? 'drag-over' : ''}`}
+                  style={{
+                    background: dateInfo?.isToday ? 'rgba(57, 169, 0, 0.02)' : undefined,
+                  }}
                   onDragOver={(e) => handleDragOver(e, dia, hora)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, dia, hora)}
@@ -145,58 +188,25 @@ export const ScheduleGrid: React.FC<ScheduleGridProps> = ({
                     />
                   ))}
 
-                  {/* Multi-hour indicator */}
+                  {/* Multi-hour continuation indicator */}
                   {continuingEntries.length > 0 && startingEntries.length === 0 && (
                     <div
                       style={{
-                        padding: '0.4rem 0.6rem',
-                        borderRadius: 'var(--radius-sm)',
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        border: '1px dashed var(--border-subtle)',
-                        fontSize: '0.72rem',
+                        padding: '0.2rem 0.4rem',
+                        fontSize: '0.7rem',
                         color: 'var(--text-dim)',
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        borderLeft: '2px dashed var(--border-subtle)',
+                        borderRadius: '3px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
+                        gap: '0.3rem',
+                        marginTop: 'auto'
                       }}
                     >
-                      <span>
-                        ↳ Continuación ({continuingEntries.map(ce => fichaMap.get(ce.fichaId)?.codigo).join(', ')})
-                      </span>
-                      <span style={{ fontSize: '0.65rem' }}>
-                        Hasta las {Math.max(...continuingEntries.map(ce => ce.horaInicio + ce.duracionHoras))}:00
-                      </span>
+                      <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--sena-primary)' }} />
+                      <span>Continuación de sesión</span>
                     </div>
-                  )}
-
-                  {/* Add Button on empty cell */}
-                  {startingEntries.length === 0 && continuingEntries.length === 0 && (
-                    <button
-                      type="button"
-                      className="no-print"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAddSlotAtCell(dia, hora);
-                      }}
-                      style={{
-                        position: 'absolute',
-                        bottom: '4px',
-                        right: '4px',
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--text-dim)',
-                        cursor: 'pointer',
-                        padding: '2px',
-                        borderRadius: '4px',
-                        opacity: 0.3,
-                        transition: 'opacity 0.2s',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                      onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.3')}
-                      title={`Agregar clase el ${dia} a las ${hora}:00`}
-                    >
-                      <Plus size={14} />
-                    </button>
                   )}
                 </div>
               );

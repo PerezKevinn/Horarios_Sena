@@ -30,6 +30,7 @@
 
 /* Dark Theme (Default) */
 [data-theme='dark'] {
+  color-scheme: dark;
   --bg-app: #0c1017;
   --bg-surface: #131924;
   --bg-surface-elevated: #1a2232;
@@ -60,6 +61,7 @@
 
 /* Light Theme */
 [data-theme='light'] {
+  color-scheme: light;
   --bg-app: #f4f6f9;
   --bg-surface: #ffffff;
   --bg-surface-elevated: #ffffff;

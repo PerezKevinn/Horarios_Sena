@@ -1,11 +1,13 @@
-import React from 'react';
 import {
   Calendar,
+  CalendarDays,
+  CalendarRange,
   Users,
   GraduationCap,
-  BookOpen,
+  Layers,
   Building2,
   AlertTriangle,
+  Clock,
 } from 'lucide-react';
 import { useSchedule } from '../../context/ScheduleContext';
 
@@ -13,9 +15,11 @@ export const Sidebar: React.FC = () => {
   const {
     activeTab,
     setActiveTab,
+    timeScale,
+    setTimeScale,
+    programas,
     instructores,
     fichas,
-    competencias,
     ambientes,
     conflicts,
     horarios,
@@ -23,18 +27,61 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside className="app-sidebar">
-      <div className="nav-section-title">Navegación Principal</div>
+      <div className="nav-section-title">Planeación & Horarios</div>
 
       <button
-        className={`nav-item ${activeTab === 'schedule' ? 'active' : ''}`}
-        onClick={() => setActiveTab('schedule')}
+        className={`nav-item ${activeTab === 'schedule' && timeScale === 'semanal' ? 'active' : ''}`}
+        onClick={() => {
+          setActiveTab('schedule');
+          setTimeScale('semanal');
+        }}
       >
         <div className="nav-item-left">
           <Calendar size={18} />
-          <span>Matriz de Horarios</span>
+          <span>Matriz Semanal</span>
         </div>
         <span className="nav-counter">{horarios.length}</span>
       </button>
+
+      <button
+        className={`nav-item ${activeTab === 'schedule' && timeScale === 'mensual' ? 'active' : ''}`}
+        onClick={() => {
+          setActiveTab('schedule');
+          setTimeScale('mensual');
+        }}
+      >
+        <div className="nav-item-left">
+          <CalendarDays size={18} />
+          <span>Calendario Mensual</span>
+        </div>
+      </button>
+
+      <button
+        className={`nav-item ${activeTab === 'schedule' && timeScale === 'anual' ? 'active' : ''}`}
+        onClick={() => {
+          setActiveTab('schedule');
+          setTimeScale('anual');
+        }}
+      >
+        <div className="nav-item-left">
+          <CalendarRange size={18} color={activeTab === 'schedule' && timeScale === 'anual' ? 'white' : 'var(--sena-primary)'} />
+          <span>Planeación Anual</span>
+        </div>
+        <span className="badge badge-sena" style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem' }}>Anual</span>
+      </button>
+
+      <button
+        className={`nav-item ${activeTab === 'cuadro-horas' ? 'active' : ''}`}
+        onClick={() => setActiveTab('cuadro-horas')}
+      >
+        <div className="nav-item-left">
+          <Clock size={18} color={activeTab === 'cuadro-horas' ? 'white' : '#10B981'} />
+          <span>Cuadro de Horas (80%)</span>
+        </div>
+        <span className="badge badge-sena" style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem' }}>80%</span>
+      </button>
+
+      <div className="nav-section-title" style={{ marginTop: '0.75rem' }}>Gestión Curricular</div>
 
       <button
         className={`nav-item ${activeTab === 'fichas' ? 'active' : ''}`}
@@ -48,6 +95,17 @@ export const Sidebar: React.FC = () => {
       </button>
 
       <button
+        className={`nav-item ${activeTab === 'programas' ? 'active' : ''}`}
+        onClick={() => setActiveTab('programas')}
+      >
+        <div className="nav-item-left">
+          <Layers size={18} />
+          <span>Programas de Formación</span>
+        </div>
+        <span className="nav-counter">{programas.length}</span>
+      </button>
+
+      <button
         className={`nav-item ${activeTab === 'instructores' ? 'active' : ''}`}
         onClick={() => setActiveTab('instructores')}
       >
@@ -56,17 +114,6 @@ export const Sidebar: React.FC = () => {
           <span>Instructores</span>
         </div>
         <span className="nav-counter">{instructores.length}</span>
-      </button>
-
-      <button
-        className={`nav-item ${activeTab === 'competencias' ? 'active' : ''}`}
-        onClick={() => setActiveTab('competencias')}
-      >
-        <div className="nav-item-left">
-          <BookOpen size={18} />
-          <span>Competencias</span>
-        </div>
-        <span className="nav-counter">{competencias.length}</span>
       </button>
 
       <button

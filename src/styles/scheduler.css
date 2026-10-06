@@ -1,50 +1,100 @@
 /* ==========================================================================
-   SENA Horarios - Scheduler Grid & Unclipped Card Styles
+   SENA Horarios - Modern, Clean & Pleasant Visual Styling
    ========================================================================== */
 
 .scheduler-container {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.85rem;
+  width: 100%;
 }
 
-/* Scheduler Top Toolbar */
-.scheduler-toolbar {
+/* ==========================================================================
+   1. Unified Top Control Bar (All-In-One Command Center)
+   ========================================================================== */
+.unified-control-bar {
   background: var(--bg-card);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.25rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.85rem;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
-.view-mode-tabs {
-  display: flex;
+.unified-control-bar:hover {
+  border-color: var(--border-strong);
+}
+
+/* Segmented Time Horizon Pill Control (Semanal / Mensual / Anual) */
+.time-scale-segmented {
+  display: inline-flex;
   align-items: center;
   background: var(--bg-surface-elevated);
-  padding: 0.3rem;
-  border-radius: var(--radius-md);
+  padding: 0.25rem;
+  border-radius: 999px;
   border: 1px solid var(--border-subtle);
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
-.view-tab-btn {
+.time-scale-pill-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--text-muted);
   background: transparent;
   border: none;
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.time-scale-pill-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.time-scale-pill-btn.active {
+  background: var(--sena-primary);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 10px var(--sena-primary-glow);
+}
+
+/* View Mode Filter Tabs (General, Por Ficha, Por Instructor, Por Ambiente) */
+.view-mode-tabs {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface-elevated);
+  padding: 0.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  gap: 0.2rem;
+}
+
+.view-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .view-tab-btn:hover {
@@ -53,24 +103,62 @@
 
 .view-tab-btn.active {
   background: var(--sena-primary);
-  color: white;
+  color: #ffffff;
+  font-weight: 700;
   box-shadow: 0 2px 8px var(--sena-primary-glow);
 }
 
+/* Filter Select Wrapper */
 .filter-select-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .filter-select-group label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-muted);
-  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-/* Scheduler Grid Board */
+/* ==========================================================================
+   2. Clean, Minimalist Stats Strip
+   ========================================================================== */
+.clean-stat-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.15rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.stat-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.stat-strip-item strong {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.stat-strip-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border-subtle);
+}
+
+/* ==========================================================================
+   3. Weekly Schedule Grid & Cards
+   ========================================================================== */
 .schedule-grid-wrapper {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -81,15 +169,15 @@
 
 .schedule-grid {
   display: grid;
-  grid-template-columns: 80px repeat(6, minmax(240px, 1fr));
+  grid-template-columns: 80px repeat(6, minmax(220px, 1fr));
   border-collapse: collapse;
-  min-width: 1400px;
+  min-width: 1350px;
 }
 
 .schedule-header-cell {
   background: var(--grid-header);
-  padding: 0.9rem 0.75rem;
-  font-size: 0.85rem;
+  padding: 0.8rem 0.65rem;
+  font-size: 0.84rem;
   font-weight: 700;
   text-align: center;
   color: var(--text-main);
@@ -108,8 +196,8 @@
 
 .time-column-cell {
   background: var(--bg-surface-elevated);
-  padding: 0.75rem 0.5rem;
-  font-size: 0.75rem;
+  padding: 0.65rem 0.4rem;
+  font-size: 0.74rem;
   font-family: var(--font-mono);
   font-weight: 600;
   color: var(--text-muted);
@@ -122,7 +210,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 90px;
+  min-height: 85px;
 }
 
 .schedule-slot-cell {
@@ -130,12 +218,12 @@
   border-bottom: 1px solid var(--grid-line);
   border-right: 1px solid var(--grid-line);
   padding: 0.4rem;
-  min-height: 90px;
+  min-height: 85px;
   position: relative;
   transition: background-color var(--transition-fast);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .schedule-slot-cell:hover {
@@ -147,16 +235,16 @@
   outline: 2px dashed var(--sena-primary);
 }
 
-/* The Horario Card - FULL DETAILS, NO TEXT TRUNCATION */
+/* Beautiful, Unclipped Slot Card */
 .slot-card {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-left-width: 4px;
   border-radius: var(--radius-md);
-  padding: 0.75rem;
+  padding: 0.65rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.45rem;
   box-shadow: var(--shadow-sm);
   cursor: grab;
   user-select: none;
@@ -188,7 +276,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
@@ -198,7 +286,7 @@
   color: var(--text-main);
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
-  padding: 0.2rem 0.5rem;
+  padding: 0.18rem 0.48rem;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -206,7 +294,7 @@
 }
 
 .card-time-badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-family: var(--font-mono);
   font-weight: 700;
   color: var(--text-muted);
@@ -215,39 +303,40 @@
   border-radius: 4px;
 }
 
-/* Competency Name (Full, legible, no ellipses) */
+/* Competency Name */
 .card-competencia-title {
-  font-size: 0.82rem;
+  font-size: 0.81rem;
   font-weight: 700;
   color: var(--text-main);
-  line-height: 1.35;
+  line-height: 1.32;
   word-break: break-word;
   overflow-wrap: anywhere;
+  margin: 0;
 }
 
 .card-competencia-code {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.67rem;
   font-family: var(--font-mono);
   color: var(--text-dim);
   font-weight: 600;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.12rem;
 }
 
-/* Card Details: Instructor & Room with Full Text */
+/* Card Details: Instructor & Room */
 .card-details-box {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
   padding-top: 0.35rem;
   border-top: 1px solid var(--border-subtle);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
 }
 
 .card-detail-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.45rem;
+  gap: 0.4rem;
   color: var(--text-muted);
   line-height: 1.25;
 }
@@ -263,14 +352,14 @@
   word-break: break-word;
 }
 
-/* Quick Actions on Hover */
+/* Quick Actions on Card Hover */
 .card-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.35rem;
-  margin-top: 0.25rem;
-  padding-top: 0.35rem;
+  margin-top: 0.2rem;
+  padding-top: 0.3rem;
   border-top: 1px dashed var(--border-subtle);
 }
 
@@ -279,8 +368,8 @@
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   border-radius: 4px;
-  padding: 0.2rem 0.45rem;
-  font-size: 0.7rem;
+  padding: 0.18rem 0.45rem;
+  font-size: 0.68rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -299,11 +388,10 @@
   border-color: transparent;
 }
 
-/* Conflict Ribbon in Card */
 .conflict-badge-pill {
   background: #f43f5e;
   color: white;
-  font-size: 0.68rem;
+  font-size: 0.67rem;
   font-weight: 700;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
@@ -311,3 +399,242 @@
   align-items: center;
   gap: 0.3rem;
 }
+
+/* ==========================================================================
+   4. Monthly Calendar View Polish
+   ========================================================================== */
+.monthly-calendar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.monthly-day-cell {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.monthly-day-cell:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-card-hover) !important;
+}
+
+.calendar-pill-chip {
+  font-size: 0.72rem;
+  padding: 0.22rem 0.45rem;
+  border-radius: 5px;
+  background: var(--bg-surface-elevated);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: transform 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+  border-left: 3px solid var(--sena-primary);
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendar-pill-chip:hover {
+  transform: translateX(2px);
+  background: rgba(57, 169, 0, 0.12);
+}
+
+/* ==========================================================================
+   5. Annual 12 Mini-Months Board & Planning Polish
+   ========================================================================== */
+.annual-planning-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.annual-months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1400px) {
+  .annual-months-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .annual-months-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .annual-months-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Individual Mini Month Card */
+.mini-month-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mini-month-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+
+.mini-month-card.t1 {
+  border-top: 3px solid var(--sena-primary);
+}
+
+.mini-month-card.t2 {
+  border-top: 3px solid var(--accent-blue);
+}
+
+.mini-month-card.t3 {
+  border-top: 3px solid var(--accent-purple);
+}
+
+.mini-month-card.t4 {
+  border-top: 3px solid var(--accent-amber);
+}
+
+/* Mini Month Header */
+.mini-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mini-month-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.mini-month-title:hover {
+  color: var(--sena-primary);
+}
+
+.mini-month-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--bg-surface-elevated);
+  color: var(--text-muted);
+}
+
+/* 7-Column Mini Days Grid */
+.mini-days-header-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-dim);
+}
+
+.mini-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.mini-day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  position: relative;
+}
+
+.mini-day-cell.other-month {
+  opacity: 0.15;
+  cursor: default;
+}
+
+.mini-day-cell:not(.other-month):hover {
+  background: var(--bg-surface-elevated);
+  transform: scale(1.15);
+  z-index: 5;
+  box-shadow: var(--shadow-sm);
+}
+
+.mini-day-cell.has-classes {
+  background: rgba(57, 169, 0, 0.12);
+  color: var(--sena-primary);
+  font-weight: 700;
+}
+
+.mini-day-cell.has-classes.intensity-high {
+  background: rgba(57, 169, 0, 0.22);
+}
+
+.mini-day-cell.is-today {
+  background: var(--sena-primary) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--sena-primary-glow);
+}
+
+.mini-day-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 1px;
+}
+
+.mini-day-dot.start {
+  background: var(--sena-primary);
+}
+
+.mini-day-dot.end {
+  background: var(--accent-amber);
+}
+
+.mini-day-dot.ficha {
+  background: var(--accent-blue);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .unified-control-bar {
+    padding: 0.65rem 0.85rem;
+  }
+  
+  .clean-stat-strip {
+    gap: 0.75rem;
+    font-size: 0.76rem;
+  }
+}
+

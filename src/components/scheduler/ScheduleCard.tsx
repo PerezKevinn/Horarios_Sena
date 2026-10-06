@@ -6,7 +6,8 @@ import {
   GraduationCap,
   Edit2,
   Trash2,
-  AlertCircle
+  AlertCircle,
+  Calendar
 } from 'lucide-react';
 import type { HorarioEntry, Instructor, Ficha, Ambiente, Competencia, ConflictDetail } from '../../types';
 
@@ -36,6 +37,19 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
   const matchingConflicts = conflicts.filter(c => c.entryIds.includes(entry.id));
   const hasConflict = matchingConflicts.length > 0;
   const horaFin = entry.horaInicio + entry.duracionHoras;
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    try {
+      const [year, month, day] = dateStr.split('-');
+      if (year && month && day) {
+        return `${day}/${month}/${year}`;
+      }
+      return dateStr;
+    } catch {
+      return dateStr;
+    }
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', JSON.stringify({ id: entry.id, horaInicio: entry.horaInicio, dia: entry.dia }));
@@ -78,11 +92,19 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
 
       {/* Full Competency Name (No truncation) */}
       <div>
-        {competencia?.codigo && (
-          <span className="card-competencia-code">
-            Comp. {competencia.codigo}
-          </span>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem', flexWrap: 'wrap' }}>
+          {competencia?.codigo && (
+            <span className="card-competencia-code">
+              Comp. {competencia.codigo}
+            </span>
+          )}
+          {competencia?.fechaInicio && competencia?.fechaFin && (
+            <span style={{ fontSize: '0.67rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '2px' }} title="Periodo de la competencia">
+              <Calendar size={10} color="var(--sena-primary)" />
+              {formatDate(competencia.fechaInicio)} - {formatDate(competencia.fechaFin)}
+            </span>
+          )}
+        </div>
         <h4 className="card-competencia-title">
           {competencia?.nombre || 'Competencia no especificada'}
         </h4>

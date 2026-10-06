@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, BookOpen, Clock } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, BookOpen, Clock, Layers, Calendar, CalendarCheck, AlertCircle } from 'lucide-react';
 import { useSchedule } from '../../context/ScheduleContext';
 import type { Competencia } from '../../types';
 import { Modal } from '../common/Modal';
@@ -8,13 +8,15 @@ import { Badge } from '../common/Badge';
 export const CompetenciaManager: React.FC = () => {
   const {
     competencias,
+    programas,
     fichas,
     instructores,
     ambientes,
     addCompetencia,
     updateCompetencia,
     deleteCompetencia,
-    horarios
+    horarios,
+    setActiveTab
   } = useSchedule();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,18 +34,36 @@ export const CompetenciaManager: React.FC = () => {
   const [horasSemanales, setHorasSemanales] = useState(8);
   const [horasTotales, setHorasTotales] = useState(96);
   const [bloqueMinimoHoras, setBloqueMinimoHoras] = useState(2);
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return 'No definida';
+    try {
+      const [year, month, day] = dateStr.split('-');
+      if (year && month && day) {
+        return `${day}/${month}/${year}`;
+      }
+      return dateStr;
+    } catch {
+      return dateStr;
+    }
+  };
 
   const openAddModal = () => {
     setEditingComp(null);
     setCodigo('');
     setNombre('');
     setResultadoAprendizaje('');
-    setFichaId(fichas[0]?.id || '');
+    const targetFicha = fichas[0];
+    setFichaId(targetFicha?.id || '');
     setInstructorId(instructores[0]?.id || '');
     setAmbienteId(ambientes[0]?.id || '');
     setHorasSemanales(8);
     setHorasTotales(96);
     setBloqueMinimoHoras(2);
+    setFechaInicio(targetFicha?.fechaIngreso || '');
+    setFechaFin(targetFicha?.fechaSalida || '');
     setIsModalOpen(true);
   };
 
@@ -58,6 +78,8 @@ export const CompetenciaManager: React.FC = () => {
     setHorasSemanales(comp.horasSemanales);
     setHorasTotales(comp.horasTotales);
     setBloqueMinimoHoras(comp.bloqueMinimoHoras || 2);
+    setFechaInicio(comp.fechaInicio || '');
+    setFechaFin(comp.fechaFin || '');
     setIsModalOpen(true);
   };
 
@@ -78,6 +100,8 @@ export const CompetenciaManager: React.FC = () => {
       horasSemanales: Number(horasSemanales),
       horasTotales: Number(horasTotales),
       bloqueMinimoHoras: Number(bloqueMinimoHoras),
+      fechaInicio: fechaInicio || undefined,
+      fechaFin: fechaFin || undefined,
     };
 
     if (editingComp) {
@@ -115,12 +139,18 @@ export const CompetenciaManager: React.FC = () => {
       <div className="panel-header">
         <div className="panel-title-area">
           <h2>Gestión de Competencias y Horas</h2>
-          <p>Define las competencias por ficha, instructor responsable, horas semanales requeridas y ambiente de aprendizaje.</p>
+          <p>Define y ajusta las competencias asignadas a cada ficha, instructor responsable, horas semanales y ambiente.</p>
         </div>
-        <button className="btn btn-primary" onClick={openAddModal}>
-          <Plus size={16} />
-          <span>Nueva Competencia</span>
-        </button>
+        <div style={{ display: 'flex', gap: '0.6rem' }}>
+          <button className="btn btn-secondary" onClick={() => setActiveTab('programas')}>
+            <Layers size={16} />
+            <span>Mallas Curriculares / Programas ({programas.length})</span>
+          </button>
+          <button className="btn btn-primary" onClick={openAddModal}>
+            <Plus size={16} />
+            <span>Nueva Competencia</span>
+          </button>
+        </div>
       </div>
 
       <div className="filter-bar">
@@ -157,6 +187,7 @@ export const CompetenciaManager: React.FC = () => {
             <tr>
               <th>Código</th>
               <th>Nombre de la Competencia</th>
+              <th>Periodo (Inicio / Fin)</th>
               <th>Ficha Asignada</th>
               <th>Instructor Asignado</th>
               <th>Ambiente</th>
@@ -168,7 +199,7 @@ export const CompetenciaManager: React.FC = () => {
           <tbody>
             {filteredCompetencias.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '2rem' }}>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '2rem' }}>
                   No se encontraron competencias registradas.
                 </td>
               </tr>
@@ -196,6 +227,18 @@ export const CompetenciaManager: React.FC = () => {
                           RAP: {comp.resultadoAprendizaje}
                         </div>
                       )}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', fontSize: '0.74rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-main)' }} title="Fecha de Inicio">
+                          <Calendar size={12} color="var(--sena-primary)" />
+                          <span><strong>Inicio:</strong> {formatDate(comp.fechaInicio)}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-muted)' }} title="Fecha de Finalización">
+                          <CalendarCheck size={12} color="#f59e0b" />
+                          <span><strong>Fin:</strong> {formatDate(comp.fechaFin)}</span>
+                        </div>
+                      </div>
                     </td>
                     <td>
                       {ficha ? (
@@ -301,7 +344,14 @@ export const CompetenciaManager: React.FC = () => {
                 className="form-select"
                 required
                 value={fichaId}
-                onChange={(e) => setFichaId(e.target.value)}
+                onChange={(e) => {
+                  setFichaId(e.target.value);
+                  const selectedF = fichas.find(f => f.id === e.target.value);
+                  if (selectedF) {
+                    if (selectedF.fechaIngreso && !fechaInicio) setFechaInicio(selectedF.fechaIngreso);
+                    if (selectedF.fechaSalida && !fechaFin) setFechaFin(selectedF.fechaSalida);
+                  }
+                }}
               >
                 <option value="">-- Seleccionar Ficha --</option>
                 {fichas.map(f => (
@@ -335,6 +385,38 @@ export const CompetenciaManager: React.FC = () => {
               onChange={(e) => setResultadoAprendizaje(e.target.value)}
             />
           </div>
+
+          {/* Fechas de Inicio y Finalización */}
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Fecha de Inicio</label>
+              <input
+                type="date"
+                className="form-input"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Fecha de Finalización</label>
+              <input
+                type="date"
+                className="form-input"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {fechaInicio && fechaFin && fechaFin < fechaInicio && (
+            <div className="alert-banner warning" style={{ padding: '0.6rem 0.85rem', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <AlertCircle size={16} />
+              <span style={{ fontSize: '0.8rem' }}>
+                Atención: La fecha de finalización es anterior a la fecha de inicio.
+              </span>
+            </div>
+          )}
 
           <div className="form-row">
             <div className="form-group">

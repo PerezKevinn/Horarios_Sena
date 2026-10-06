@@ -4,10 +4,11 @@ import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { ScheduleView } from './components/scheduler/ScheduleView';
 import { FichaManager } from './components/management/FichaManager';
+import { ProgramaManager } from './components/management/ProgramaManager';
 import { InstructorManager } from './components/management/InstructorManager';
-import { CompetenciaManager } from './components/management/CompetenciaManager';
 import { AmbienteManager } from './components/management/AmbienteManager';
 import { ConflictAlerts } from './components/scheduler/ConflictAlerts';
+import { CuadroDeHorasView } from './components/scheduler/CuadroDeHorasView';
 
 import './styles/index.css';
 import './styles/components.css';
@@ -21,12 +22,14 @@ const MainDashboard: React.FC = () => {
     switch (activeTab) {
       case 'schedule':
         return <ScheduleView />;
+      case 'cuadro-horas':
+        return <CuadroDeHorasView />;
       case 'fichas':
         return <FichaManager />;
+      case 'programas':
+        return <ProgramaManager />;
       case 'instructores':
         return <InstructorManager />;
-      case 'competencias':
-        return <CompetenciaManager />;
       case 'ambientes':
         return <AmbienteManager />;
       case 'conflicts':
