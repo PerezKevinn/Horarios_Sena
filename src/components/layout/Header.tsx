@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Sparkles,
   Download,
@@ -9,9 +9,13 @@ import {
   RefreshCw,
   Upload,
   AlertTriangle,
-  CalendarCheck
+  CalendarCheck,
+  LogOut,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 import { useSchedule } from '../../context/ScheduleContext';
+import { useAuth } from '../../context/AuthContext';
 import { exportScheduleToCSV, exportStateAsJSON } from '../../utils/exportUtils';
 import { Modal } from '../common/Modal';
 import confetti from 'canvas-confetti';
@@ -32,12 +36,30 @@ export const Header: React.FC = () => {
     importStateFromJSON,
   } = useSchedule();
 
+  const { currentUser, isAdmin, logout, switchUser, demoUsers } = useAuth();
+
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [isGenModalOpen, setIsGenModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [keepExisting, setKeepExisting] = useState(false);
   const [genReport, setGenReport] = useState<any>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
 
   const handleToggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -123,14 +145,16 @@ export const Header: React.FC = () => {
         </div>
 
         <div className="header-actions">
-          <button
-            className="btn btn-primary"
-            onClick={() => setIsGenModalOpen(true)}
-            title="Generar distribución automática de horarios"
-          >
-            <Sparkles size={16} />
-            <span>Generar Horario</span>
-          </button>
+          {isAdmin && (
+            <button
+              className="btn btn-primary"
+              onClick={() => setIsGenModalOpen(true)}
+              title="Generar distribución automática de horarios"
+            >
+              <Sparkles size={16} />
+              <span>Generar Horario</span>
+            </button>
+          )}
 
           <button
             className="btn btn-secondary"
@@ -149,13 +173,15 @@ export const Header: React.FC = () => {
             <Printer size={18} />
           </button>
 
-          <button
-            className="btn btn-icon"
-            onClick={() => setIsBackupModalOpen(true)}
-            title="Copias de Seguridad & Datos Demo"
-          >
-            <Database size={18} />
-          </button>
+          {isAdmin && (
+            <button
+              className="btn btn-icon"
+              onClick={() => setIsBackupModalOpen(true)}
+              title="Copias de Seguridad & Datos Demo"
+            >
+              <Database size={18} />
+            </button>
+          )}
 
           <button
             className="btn btn-icon"
@@ -164,6 +190,83 @@ export const Header: React.FC = () => {
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
+
+          {/* User Profile Pill & Dropdown Menu */}
+          {currentUser && (
+            <div className="header-user-profile-wrap" ref={userMenuRef}>
+              <button
+                type="button"
+                className={`header-user-btn ${isUserMenuOpen ? 'active' : ''}`}
+                onClick={() => setIsUserMenuOpen((prev) => !prev)}
+                title="Perfil de Usuario y Cambio de Rol"
+              >
+                <div className={`user-avatar-badge ${isAdmin ? 'admin' : ''}`}>
+                  {isAdmin ? '👑' : '👨‍🏫'}
+                </div>
+                <div className="header-user-info">
+                  <span className="header-user-name">{currentUser.name}</span>
+                  <span className={`header-user-role-badge ${isAdmin ? 'admin' : ''}`}>
+                    {isAdmin ? 'Administrador' : 'Instructor SENA'}
+                  </span>
+                </div>
+                <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} />
+              </button>
+
+              {isUserMenuOpen && (
+                <div className="user-profile-menu-dropdown animate-popover">
+                  <div className="user-menu-header">
+                    <div className={`user-menu-avatar-large ${isAdmin ? 'admin' : ''}`}>
+                      {isAdmin ? '👑' : '👨‍🏫'}
+                    </div>
+                    <div className="user-menu-user-details">
+                      <strong>{currentUser.name}</strong>
+                      <span>{currentUser.cargo || currentUser.email}</span>
+                      {currentUser.documento && (
+                        <span style={{ fontSize: '0.66rem', color: 'var(--text-dim)' }}>
+                          Doc: {currentUser.documento}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="user-menu-section-title">Cambio Rápido de Cuenta / Rol:</div>
+                  <div className="user-menu-role-list">
+                    {demoUsers.map((u) => (
+                      <button
+                        key={u.id}
+                        type="button"
+                        className={`user-menu-role-item ${currentUser.id === u.id ? 'active' : ''}`}
+                        onClick={() => {
+                          switchUser(u.id);
+                          setIsUserMenuOpen(false);
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
+                          <span>{u.role === 'admin' ? '👑' : '👨‍🏫'}</span>
+                          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {u.name}
+                          </span>
+                        </div>
+                        {currentUser.id === u.id && <Check size={14} color="var(--sena-primary)" />}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="user-menu-logout-btn"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      logout();
+                    }}
+                  >
+                    <LogOut size={15} />
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </header>
 

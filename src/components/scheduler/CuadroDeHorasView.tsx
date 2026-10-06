@@ -15,6 +15,7 @@ import {
   Layers
 } from 'lucide-react';
 import { useSchedule } from '../../context/ScheduleContext';
+import { useAuth } from '../../context/AuthContext';
 import { Badge } from '../common/Badge';
 
 export const CuadroDeHorasView: React.FC = () => {
@@ -26,6 +27,8 @@ export const CuadroDeHorasView: React.FC = () => {
     horarios,
     setActiveTab,
   } = useSchedule();
+
+  const { isInstructor, currentInstructorId } = useAuth();
 
   const [activeSubTab, setActiveSubTab] = useState<'instructores' | 'fichas' | 'ambientes'>('instructores');
   const [searchTerm, setSearchTerm] = useState('');
@@ -439,9 +442,10 @@ export const CuadroDeHorasView: React.FC = () => {
                 ) : (
                   filteredInstructores.map(inst => {
                     const isExpanded = expandedRowIds.has(inst.id);
+                    const isMe = isInstructor && currentInstructorId === inst.id;
                     return (
                       <React.Fragment key={inst.id}>
-                        <tr style={{ background: isExpanded ? 'rgba(57, 169, 0, 0.03)' : undefined }}>
+                        <tr style={{ background: isMe ? 'rgba(57, 169, 0, 0.08)' : (isExpanded ? 'rgba(57, 169, 0, 0.03)' : undefined), borderLeft: isMe ? '3px solid var(--sena-primary)' : undefined }}>
                           <td>
                             <button
                               className="btn-icon"
@@ -456,7 +460,10 @@ export const CuadroDeHorasView: React.FC = () => {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                               <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: inst.color, flexShrink: 0 }} />
                               <div>
-                                <strong style={{ color: 'var(--text-main)' }}>{inst.nombre}</strong>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                  <strong style={{ color: 'var(--text-main)' }}>{inst.nombre}</strong>
+                                  {isMe && <span className="badge badge-sena" style={{ fontSize: '0.62rem', padding: '0.05rem 0.35rem' }}>Tú</span>}
+                                </div>
                                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                                   Doc: {inst.documento} • {inst.especialidad}
                                 </div>

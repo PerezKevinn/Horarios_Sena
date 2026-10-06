@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Users,
   GraduationCap,
@@ -17,6 +17,7 @@ import {
   BarChart3
 } from 'lucide-react';
 import { useSchedule } from '../../context/ScheduleContext';
+import { useAuth } from '../../context/AuthContext';
 import type { HorarioEntry, DayOfWeek } from '../../types';
 import { ScheduleGrid, type DayDateInfo } from './ScheduleGrid';
 import { ManualSlotEditorModal } from './ManualSlotEditorModal';
@@ -52,11 +53,20 @@ export const ScheduleView: React.FC = () => {
     setActiveTab,
   } = useSchedule();
 
-  const [viewMode, setViewMode] = useState<ViewMode>('all');
+  const { currentUser, isAdmin, isInstructor, currentInstructorId } = useAuth();
+
+  const [viewMode, setViewMode] = useState<ViewMode>(() => (isInstructor ? 'instructor' : 'all'));
   const [selectedFichaId, setSelectedFichaId] = useState<string>(fichas[0]?.id || '');
-  const [selectedInstructorId, setSelectedInstructorId] = useState<string>(instructores[0]?.id || '');
+  const [selectedInstructorId, setSelectedInstructorId] = useState<string>(() => (isInstructor && currentInstructorId ? currentInstructorId : (instructores[0]?.id || '')));
   const [selectedAmbienteId, setSelectedAmbienteId] = useState<string>(ambientes[0]?.id || '');
   const [filterByDateValidity, setFilterByDateValidity] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isInstructor && currentInstructorId) {
+      setViewMode('instructor');
+      setSelectedInstructorId(currentInstructorId);
+    }
+  }, [isInstructor, currentInstructorId]);
 
   // Modal for adding / editing slots
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -315,17 +325,23 @@ export const ScheduleView: React.FC = () => {
                 <span>Solo vigentes en fecha</span>
               </label>
 
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  setEditingSlot(null);
-                  setIsModalOpen(true);
-                }}
-                style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem' }}
-              >
-                <Plus size={14} />
-                <span>Asignar Clase</span>
-              </button>
+              {isAdmin ? (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setEditingSlot(null);
+                    setIsModalOpen(true);
+                  }}
+                  style={{ padding: '0.4rem 0.9rem', fontSize: '0.82rem' }}
+                >
+                  <Plus size={14} />
+                  <span>Asignar Clase</span>
+                </button>
+              ) : (
+                <span className="badge badge-sena" style={{ fontSize: '0.74rem', padding: '0.35rem 0.65rem' }}>
+                  👨‍🏫 Instructor: {currentUser?.name || 'Docente'}
+                </span>
+              )}
             </>
           )}
         </div>

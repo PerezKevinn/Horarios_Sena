@@ -38,13 +38,13 @@ interface ScheduleContextType {
   conflicts: ConflictDetail[];
   stats: ScheduleStats;
   theme: 'dark' | 'light';
-  activeTab: 'schedule' | 'fichas' | 'programas' | 'instructores' | 'ambientes' | 'conflicts' | 'cuadro-horas';
+  activeTab: 'schedule' | 'fichas' | 'programas' | 'instructores' | 'ambientes' | 'conflicts' | 'cuadro-horas' | 'users';
   timeScale: 'semanal' | 'mensual' | 'anual';
   selectedDate: string; // YYYY-MM-DD
 
   // State setters & actions
   setTheme: (theme: 'dark' | 'light') => void;
-  setActiveTab: (tab: 'schedule' | 'fichas' | 'programas' | 'instructores' | 'ambientes' | 'conflicts' | 'cuadro-horas') => void;
+  setActiveTab: (tab: 'schedule' | 'fichas' | 'programas' | 'instructores' | 'ambientes' | 'conflicts' | 'cuadro-horas' | 'users') => void;
   setTimeScale: (scale: 'semanal' | 'mensual' | 'anual') => void;
   setSelectedDate: (date: string) => void;
 
@@ -201,7 +201,7 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   });
 
-  const [activeTab, setActiveTab] = useState<'schedule' | 'fichas' | 'programas' | 'instructores' | 'ambientes' | 'conflicts' | 'cuadro-horas'>('schedule');
+  const [activeTab, setActiveTab] = useState<'schedule' | 'fichas' | 'programas' | 'instructores' | 'ambientes' | 'conflicts' | 'cuadro-horas' | 'users'>('schedule');
   const [timeScale, setTimeScale] = useState<'semanal' | 'mensual' | 'anual'>('semanal');
   const [selectedDate, setSelectedDate] = useState<string>(getTodayISO);
 

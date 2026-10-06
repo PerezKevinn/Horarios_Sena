@@ -123,3 +123,24 @@ export interface ScheduleStats {
   totalAmbientesOcupados: number;
   conflictosDetectados: number;
 }
+
+export type UserRole = 'admin' | 'instructor';
+export type UserStatus = 'Activo' | 'Inactivo';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  instructorId?: string; // ID del instructor asociado si es rol instructor
+  documento?: string;
+  cargo?: string;
+  sede?: string;
+  avatarUrl?: string;
+  estado?: UserStatus;
+  password?: string;
+  createdAt?: string;
+  lastLogin?: string;
+}
+
+
