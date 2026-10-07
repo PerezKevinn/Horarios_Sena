@@ -13,6 +13,8 @@
    1. Unified Top Control Bar (All-In-One Command Center)
    ========================================================================== */
 .unified-control-bar {
+  position: relative;
+  z-index: 100;
   background: var(--bg-card);
   backdrop-filter: var(--glass-blur);
   border: 1px solid var(--border-subtle);
@@ -126,6 +128,8 @@
    2. Clean, Minimalist Stats Strip
    ========================================================================== */
 .clean-stat-strip {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 1.25rem;
@@ -156,10 +160,26 @@
   background: var(--border-subtle);
 }
 
+.schedule-sub-bar {
+  position: relative;
+  z-index: 5;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 /* ==========================================================================
    3. Weekly Schedule Grid & Cards
    ========================================================================== */
 .schedule-grid-wrapper {
+  position: relative;
+  z-index: 1;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);

@@ -262,8 +262,14 @@ export const SenaDatePicker: React.FC<SenaDatePickerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`sena-datepicker-wrapper ${className}`}
-      style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', ...style }}
+      className={`sena-datepicker-wrapper ${className} ${isOpen ? 'is-open' : ''}`}
+      style={{
+        position: 'relative',
+        display: 'inline-flex',
+        alignItems: 'center',
+        zIndex: isOpen ? 1000 : undefined,
+        ...style
+      }}
     >
       {/* Trigger Button */}
       <button

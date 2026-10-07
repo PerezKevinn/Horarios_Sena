@@ -423,20 +423,7 @@ export const ScheduleView: React.FC = () => {
       {timeScale === 'semanal' && (
         <>
           {/* Filter Bar for Weekly Grid */}
-          <div
-            className="no-print"
-            style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-md)',
-              padding: '0.65rem 1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '0.75rem'
-            }}
-          >
+          <div className="schedule-sub-bar no-print">
             {/* View Mode Switcher */}
             <div className="view-mode-tabs" style={{ background: 'var(--bg-surface-elevated)', padding: '0.2rem' }}>
               <button
