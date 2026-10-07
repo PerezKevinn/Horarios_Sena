@@ -145,7 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_USERS;
   });
 
-  // Current Logged In User State
+  // Current Logged In User State (inicia en null para mostrar el Login)
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
@@ -155,8 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       // ignore
     }
-    // Default initial user (Admin)
-    return INITIAL_USERS[0];
+    return null;
   });
 
   // Sincronizar catálogo de usuarios desde el backend si está disponible

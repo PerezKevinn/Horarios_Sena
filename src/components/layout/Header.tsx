@@ -11,8 +11,7 @@ import {
   AlertTriangle,
   CalendarCheck,
   LogOut,
-  ChevronDown,
-  Check
+  ChevronDown
 } from 'lucide-react';
 import { useSchedule } from '../../context/ScheduleContext';
 import { useAuth } from '../../context/AuthContext';
@@ -36,7 +35,7 @@ export const Header: React.FC = () => {
     importStateFromJSON,
   } = useSchedule();
 
-  const { currentUser, isAdmin, logout, switchUser, demoUsers } = useAuth();
+  const { currentUser, isAdmin, logout } = useAuth();
 
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [isGenModalOpen, setIsGenModalOpen] = useState(false);
@@ -220,49 +219,51 @@ export const Header: React.FC = () => {
                     </div>
                     <div className="user-menu-user-details">
                       <strong>{currentUser.name}</strong>
-                      <span>{currentUser.cargo || currentUser.email}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{currentUser.email}</span>
+                      {currentUser.cargo && (
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
+                          {currentUser.cargo}
+                        </span>
+                      )}
                       {currentUser.documento && (
-                        <span style={{ fontSize: '0.66rem', color: 'var(--text-dim)' }}>
-                          Doc: {currentUser.documento}
+                        <span style={{ fontSize: '0.66rem', color: 'var(--text-dim)', marginTop: '0.1rem' }}>
+                          C.C. {currentUser.documento}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <div className="user-menu-section-title">Cambio Rápido de Cuenta / Rol:</div>
-                  <div className="user-menu-role-list">
-                    {demoUsers.map((u) => (
-                      <button
-                        key={u.id}
-                        type="button"
-                        className={`user-menu-role-item ${currentUser.id === u.id ? 'active' : ''}`}
-                        onClick={() => {
-                          switchUser(u.id);
-                          setIsUserMenuOpen(false);
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
-                          <span>{u.role === 'admin' ? '👑' : '👨‍🏫'}</span>
-                          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {u.name}
-                          </span>
-                        </div>
-                        {currentUser.id === u.id && <Check size={14} color="var(--sena-primary)" />}
-                      </button>
-                    ))}
-                  </div>
+                  <div style={{ padding: '0.75rem 0.5rem 0.25rem 0.5rem' }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      background: 'var(--bg-surface-elevated)',
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.78rem',
+                      border: '1px solid var(--border-subtle)',
+                      marginBottom: '0.5rem'
+                    }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Rol del Sistema:</span>
+                      <span className={`header-user-role-badge ${isAdmin ? 'admin' : ''}`}>
+                        {isAdmin ? '👑 Administrador' : '👨‍🏫 Instructor'}
+                      </span>
+                    </div>
 
-                  <button
-                    type="button"
-                    className="user-menu-logout-btn"
-                    onClick={() => {
-                      setIsUserMenuOpen(false);
-                      logout();
-                    }}
-                  >
-                    <LogOut size={15} />
-                    <span>Cerrar Sesión</span>
-                  </button>
+                    <button
+                      type="button"
+                      className="user-menu-logout-btn"
+                      style={{ width: '100%', marginTop: '0.25rem' }}
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        logout();
+                      }}
+                    >
+                      <LogOut size={15} />
+                      <span>Cerrar Sesión</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
