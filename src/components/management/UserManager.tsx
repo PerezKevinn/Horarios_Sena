@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Users,
   Shield,
@@ -27,12 +27,18 @@ export const UserManager: React.FC = () => {
   const {
     users,
     currentUser,
+    isLoadingUsers,
+    refreshUsers,
     addUser,
     updateUser,
     deleteUser,
     toggleUserStatus,
     resetUserPassword
   } = useAuth();
+
+  useEffect(() => {
+    refreshUsers();
+  }, []);
 
   const { instructores } = useSchedule();
 
@@ -127,7 +133,7 @@ export const UserManager: React.FC = () => {
   };
 
   // Save User (Create or Update)
-  const handleSaveUser = (e: React.FormEvent) => {
+  const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email) {
       alert('Por favor completa el nombre y el correo institucional.');
@@ -135,7 +141,7 @@ export const UserManager: React.FC = () => {
     }
 
     if (editingUserId) {
-      updateUser(editingUserId, {
+      await updateUser(editingUserId, {
         name,
         email,
         role,
@@ -147,7 +153,7 @@ export const UserManager: React.FC = () => {
         ...(password ? { password } : {}),
       });
     } else {
-      addUser({
+      await addUser({
         name,
         email,
         role,
@@ -165,9 +171,9 @@ export const UserManager: React.FC = () => {
   };
 
   // Delete User Confirmation
-  const handleDeleteUser = (user: User) => {
+  const handleDeleteUser = async (user: User) => {
     if (confirm(`¿Estás seguro de que deseas eliminar la cuenta de "${user.name}"?`)) {
-      deleteUser(user.id);
+      await deleteUser(user.id);
     }
   };
 
@@ -180,9 +186,9 @@ export const UserManager: React.FC = () => {
   };
 
   // Confirm Reset Password
-  const handleConfirmResetPassword = () => {
+  const handleConfirmResetPassword = async () => {
     if (pwTargetUser && newPassword) {
-      resetUserPassword(pwTargetUser.id, newPassword);
+      await resetUserPassword(pwTargetUser.id, newPassword);
       alert(`Contraseña restablecida exitosamente para ${pwTargetUser.name}.`);
       setIsResetPwModalOpen(false);
     }
@@ -196,14 +202,14 @@ export const UserManager: React.FC = () => {
   };
 
   // Sync Instructors (Auto-generate accounts for any instructor missing one)
-  const handleSyncInstructors = () => {
+  const handleSyncInstructors = async () => {
     let createdCount = 0;
-    instructores.forEach((inst) => {
+    for (const inst of instructores) {
       const exists = users.some(
         (u) => u.email.toLowerCase() === inst.email.toLowerCase() || u.instructorId === inst.id
       );
       if (!exists) {
-        addUser({
+        await addUser({
           name: inst.nombre,
           email: inst.email,
           role: 'instructor',
@@ -217,7 +223,7 @@ export const UserManager: React.FC = () => {
         });
         createdCount++;
       }
-    });
+    }
 
     if (createdCount > 0) {
       alert(`¡Sincronización completa! Se generaron ${createdCount} nuevas cuentas de instructor.`);
@@ -257,16 +263,26 @@ export const UserManager: React.FC = () => {
       <div className="management-header">
         <div>
           <h2>Administración de Usuarios y Roles</h2>
-          <p>Control de acceso institucional, cuentas de coordinación e instructores del sistema</p>
+          <p>Control de acceso institucional, cuentas de coordinación e instructores en base de datos PostgreSQL</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
           <button
             className="btn btn-secondary"
+            onClick={refreshUsers}
+            disabled={isLoadingUsers}
+            title="Consulta las cuentas reales directamente de la base de datos"
+          >
+            <RefreshCw size={15} className={isLoadingUsers ? 'animate-spin' : ''} color="var(--sena-primary)" />
+            <span>{isLoadingUsers ? 'Consultando...' : 'Refrescar DB'}</span>
+          </button>
+
+          <button
+            className="btn btn-secondary"
             onClick={handleSyncInstructors}
             title="Genera cuentas de acceso para todos los instructores registrados"
           >
-            <RefreshCw size={15} color="var(--sena-primary)" />
+            <Users size={15} />
             <span>Sincronizar Instructores</span>
           </button>
 
@@ -420,8 +436,8 @@ export const UserManager: React.FC = () => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                         <div
                           style={{
-                            width: '32px',
-                            height: '32px',
+                            width: '34px',
+                            height: '34px',
                             borderRadius: '50%',
                             background:
                               user.role === 'admin'
@@ -430,26 +446,27 @@ export const UserManager: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '0.85rem',
+                            fontSize: '0.9rem',
                             color: 'white',
                             fontWeight: 800,
                             flexShrink: 0,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                           }}
                         >
                           {user.role === 'admin' ? '👑' : '👨‍🏫'}
                         </div>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                            <strong style={{ color: 'var(--text-main)', fontSize: '0.86rem' }}>
+                            <span style={{ color: 'var(--text-main)', fontSize: '0.88rem', fontWeight: 700 }}>
                               {user.name}
-                            </strong>
+                            </span>
                             {isMe && (
                               <span className="badge badge-sena" style={{ fontSize: '0.62rem', padding: '0.05rem 0.35rem' }}>
                                 Tú
                               </span>
                             )}
                           </div>
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
                             ID: {user.id}
                           </span>
                         </div>
@@ -457,15 +474,15 @@ export const UserManager: React.FC = () => {
                     </td>
 
                     <td>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-main)' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--text-main)', fontWeight: 600 }}>
                         {user.documento || 'No registrado'}
                       </span>
                     </td>
 
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: 'var(--text-main)', fontSize: '0.82rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)', fontSize: '0.83rem' }}>
                         <Mail size={13} color="var(--sena-primary)" />
-                        <span>{user.email}</span>
+                        <span style={{ fontWeight: 500 }}>{user.email}</span>
                       </div>
                     </td>
 
@@ -476,7 +493,7 @@ export const UserManager: React.FC = () => {
                     </td>
 
                     <td>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                         {user.cargo || 'Funcionario SENA'}
                       </span>
                     </td>
@@ -492,50 +509,50 @@ export const UserManager: React.FC = () => {
                           border: 'none',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '0.3rem',
-                          padding: '0.2rem 0.55rem',
+                          gap: '0.35rem',
+                          padding: '0.25rem 0.6rem',
+                          fontWeight: 600,
+                          fontSize: '0.75rem'
                         }}
                         title={isMe ? 'No puedes desactivar tu propia cuenta' : 'Clic para cambiar estado'}
                       >
-                        {isActive ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                        {isActive ? <CheckCircle2 size={13} /> : <XCircle size={13} />}
                         <span>{isActive ? 'Activo' : 'Inactivo'}</span>
                       </button>
                     </td>
 
                     <td>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                         {user.lastLogin ? user.lastLogin : 'Pendiente'}
                       </span>
                     </td>
 
                     <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.4rem' }}>
                         <button
-                          className="btn-icon"
+                          className="table-icon-btn amber"
                           onClick={() => handleOpenResetPassword(user)}
                           title="Restablecer Contraseña"
-                          style={{ color: 'var(--accent-amber)' }}
                         >
-                          <Key size={15} />
+                          <Key size={14} />
                         </button>
 
                         <button
-                          className="btn-icon"
+                          className="table-icon-btn primary"
                           onClick={() => handleOpenEdit(user)}
                           title="Editar Usuario"
-                          style={{ color: 'var(--accent-blue)' }}
                         >
-                          <Edit2 size={15} />
+                          <Edit2 size={14} />
                         </button>
 
                         <button
-                          className="btn-icon"
+                          className="table-icon-btn danger"
                           onClick={() => handleDeleteUser(user)}
                           disabled={isMe}
                           title={isMe ? 'No puedes eliminar tu propia cuenta' : 'Eliminar Usuario'}
-                          style={{ color: isMe ? 'var(--text-dim)' : 'var(--accent-rose)', cursor: isMe ? 'not-allowed' : 'pointer' }}
+                          style={{ opacity: isMe ? 0.4 : 1, cursor: isMe ? 'not-allowed' : 'pointer' }}
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>

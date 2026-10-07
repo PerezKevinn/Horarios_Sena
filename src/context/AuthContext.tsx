@@ -10,15 +10,17 @@ export interface AuthContextType {
   currentInstructorId?: string;
   users: User[];
   demoUsers: User[];
+  isLoadingUsers: boolean;
+  refreshUsers: () => Promise<void>;
   login: (email: string, password?: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
   switchUser: (userId: string) => void;
   quickLoginAsRole: (role: UserRole, instructorId?: string) => void;
-  addUser: (userData: Omit<User, 'id'>) => User;
-  updateUser: (id: string, updates: Partial<User>) => void;
-  deleteUser: (id: string) => boolean;
-  toggleUserStatus: (id: string) => void;
-  resetUserPassword: (id: string, newPassword: string) => void;
+  addUser: (userData: Omit<User, 'id'>) => Promise<User>;
+  updateUser: (id: string, updates: Partial<User>) => Promise<void>;
+  deleteUser: (id: string) => Promise<boolean>;
+  toggleUserStatus: (id: string) => Promise<void>;
+  resetUserPassword: (id: string, newPassword: string) => Promise<void>;
 }
 
 const STORAGE_KEYS = {
@@ -129,7 +131,6 @@ export const INITIAL_USERS: User[] = [
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Users Catalog State
   const [users, setUsers] = useState<User[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.USERS_CATALOG);
@@ -145,6 +146,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_USERS;
   });
 
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+
   // Current Logged In User State (inicia en null para mostrar el Login)
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
@@ -158,23 +161,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return null;
   });
 
-  // Sincronizar catálogo de usuarios desde el backend si está disponible
-  useEffect(() => {
-    let isMounted = true;
-    async function syncRemoteUsers() {
-      try {
-        const res = await usersApi.getAll();
-        if (isMounted && res.users && res.users.length > 0) {
-          setUsers(res.users);
-        }
-      } catch {
-        // Backend en proceso de inicio o no disponible, mantiene catálogo local
+  // Función para consultar las cuentas reales directamente de la base de datos
+  const refreshUsers = async () => {
+    setIsLoadingUsers(true);
+    try {
+      const res = await usersApi.getAll();
+      if (res && Array.isArray(res.users)) {
+        setUsers(res.users);
       }
+    } catch (err: any) {
+      console.warn('Sync remoto de usuarios:', err?.message);
+    } finally {
+      setIsLoadingUsers(false);
     }
-    syncRemoteUsers();
-    return () => {
-      isMounted = false;
-    };
+  };
+
+  // Sincronizar catálogo de usuarios en tiempo real cuando hay sesión activa
+  useEffect(() => {
+    if (currentUser?.role === 'admin') {
+      refreshUsers();
+    }
   }, [currentUser]);
 
   // Persist Users Catalog
@@ -203,22 +209,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password?: string): Promise<{ success: boolean; message?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Intento de autenticación directa con el Backend PostgreSQL & JWT
+    // 1. Intento de autenticación directa con el Backend PostgreSQL en Render & JWT
     try {
       const res = await authApi.login(cleanEmail, password);
       if (res && res.user) {
         setCurrentUser(res.user);
-        setUsers((prev) => {
-          const exists = prev.some((u) => u.id === res.user.id || u.email.toLowerCase() === res.user.email.toLowerCase());
-          if (exists) {
-            return prev.map((u) => (u.id === res.user.id || u.email.toLowerCase() === res.user.email.toLowerCase() ? res.user : u));
+        // Si es admin, cargar inmediatamente todas las cuentas reales de la DB
+        if (res.user.role === 'admin') {
+          try {
+            const usersRes = await usersApi.getAll();
+            if (usersRes?.users) {
+              setUsers(usersRes.users);
+            }
+          } catch {
+            // ignore
           }
-          return [res.user, ...prev];
-        });
+        }
         return { success: true };
       }
     } catch (apiError: any) {
-      // Si la API respondió con error de contraseña o cuenta inactiva, respetamos la respuesta del backend
       const errMsg = apiError.message || '';
       if (!errMsg.includes('Failed to fetch') && !errMsg.includes('NetworkError') && !errMsg.includes('ECONNREFUSED')) {
         return { success: false, message: errMsg };
@@ -289,8 +298,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentUser(firstInst);
   };
 
-  // CRUD Operations
-  const addUser = (userData: Omit<User, 'id'>): User => {
+  // CRUD Operations sincronizadas con la Base de Datos
+  const addUser = async (userData: Omit<User, 'id'>): Promise<User> => {
+    try {
+      const res = await usersApi.create(userData);
+      if (res?.user) {
+        setUsers((prev) => [res.user, ...prev.filter((u) => u.id !== res.user.id && u.email.toLowerCase() !== res.user.email.toLowerCase())]);
+        return res.user;
+      }
+    } catch (err: any) {
+      console.warn('Sync en backend:', err?.message);
+    }
+
     const newId = `user-${Date.now()}`;
     const newUser: User = {
       ...userData,
@@ -300,20 +319,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password: userData.password || 'sena2026*',
     };
     setUsers((prev) => [newUser, ...prev]);
-
-    // Sincronizar con el backend PostgreSQL
-    usersApi.create(newUser).then((res) => {
-      if (res?.user) {
-        setUsers((prev) => prev.map((u) => (u.id === newId ? res.user : u)));
-      }
-    }).catch(() => {
-      // Si el backend no está disponible, el estado local ya está guardado
-    });
-
     return newUser;
   };
 
-  const updateUser = (id: string, updates: Partial<User>) => {
+  const updateUser = async (id: string, updates: Partial<User>): Promise<void> => {
     setUsers((prev) =>
       prev.map((u) => {
         if (u.id === id) {
@@ -327,21 +336,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
     );
 
-    // Sincronizar con el backend PostgreSQL
-    usersApi.update(id, updates).catch(() => {});
+    try {
+      const res = await usersApi.update(id, updates);
+      if (res?.user) {
+        setUsers((prev) => prev.map((u) => (u.id === id ? res.user : u)));
+        if (currentUser?.id === id) {
+          setCurrentUser(res.user);
+        }
+      }
+    } catch (err: any) {
+      console.warn('Error al actualizar en backend:', err?.message);
+    }
   };
 
-  const deleteUser = (id: string): boolean => {
+  const deleteUser = async (id: string): Promise<boolean> => {
     if (currentUser?.id === id) {
       alert('No puedes eliminar tu propia cuenta en sesión activa.');
       return false;
     }
     setUsers((prev) => prev.filter((u) => u.id !== id));
-    usersApi.delete(id).catch(() => {});
-    return true;
+    try {
+      await usersApi.delete(id);
+      return true;
+    } catch (err: any) {
+      console.warn('Error al eliminar en backend:', err?.message);
+      return true;
+    }
   };
 
-  const toggleUserStatus = (id: string) => {
+  const toggleUserStatus = async (id: string): Promise<void> => {
     if (currentUser?.id === id) {
       alert('No puedes desactivar tu propia cuenta en sesión activa.');
       return;
@@ -355,14 +378,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return u;
       })
     );
-    usersApi.toggleStatus(id).catch(() => {});
+
+    try {
+      const res = await usersApi.toggleStatus(id);
+      if (res?.user) {
+        setUsers((prev) => prev.map((u) => (u.id === id ? res.user : u)));
+      }
+    } catch (err: any) {
+      console.warn('Error al alternar estado en backend:', err?.message);
+    }
   };
 
-  const resetUserPassword = (id: string, newPassword: string) => {
+  const resetUserPassword = async (id: string, newPassword: string): Promise<void> => {
     setUsers((prev) =>
       prev.map((u) => (u.id === id ? { ...u, password: newPassword } : u))
     );
-    usersApi.resetPassword(id, newPassword).catch(() => {});
+    try {
+      await usersApi.resetPassword(id, newPassword);
+    } catch (err: any) {
+      console.warn('Error al restablecer contraseña en backend:', err?.message);
+    }
   };
 
   const isAuthenticated = currentUser !== null;
@@ -380,6 +415,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentInstructorId,
         users,
         demoUsers: users,
+        isLoadingUsers,
+        refreshUsers,
         login,
         logout,
         switchUser,
